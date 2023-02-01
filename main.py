@@ -1,18 +1,20 @@
-# Imports
 import requests
 from bs4 import BeautifulSoup
 import csv
 
 data_book = {}
 
+# STEP 2
+def get_book(url):
+    r = requests.get(url)
 
-def get_data_book(url):
-    response = requests.get(url)
+    if r.status_code == 200:
+        soup = BeautifulSoup(r.content, 'html.parser')
 
-    if response.ok:
-        soup = BeautifulSoup(
-            response.content, 'html.parser', from_encoding="utf-8")
-
+        # Get product_page_url 
+        product_page_url = r.url
+        data_book["product_page_url"] = product_page_url
+        
         # Get title
         title = soup.find("h1")
         data_book["title"] = title.text
@@ -22,7 +24,6 @@ def get_data_book(url):
         for elt in menu_links:
             links = elt.findAll("a")
             category = links[-1].text
-
         # Add category to data_book
         data_book["category"] = category
 
@@ -41,13 +42,20 @@ def get_data_book(url):
         description = soup.find("article").find("p", recursive=False).text
         data_book["product_description"] = description
 
-
+        # Get image_url
+        static_url = "http://books.toscrape.com/"
+        image_tag = soup.find("div", class_="carousel-inner").find("img")
+        image_url = static_url + image_tag["src"].strip("./")
+        data_book["image_url"] = image_url
+    
+    
 # Getting data from one book
-get_data_book(
-    "http://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html")
+get_book("http://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html")
 
 # Write datas into a csv file
 with open('output.csv', "w") as csv_file:
     writer = csv.DictWriter(csv_file, fieldnames=data_book.keys())
     writer.writeheader()
     writer.writerow(data_book)
+
+
