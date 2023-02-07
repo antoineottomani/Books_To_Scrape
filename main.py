@@ -5,16 +5,18 @@ import csv
 data_book = {}
 
 # STEP 2
+
+
 def get_book(url):
     r = requests.get(url)
 
     if r.status_code == 200:
         soup = BeautifulSoup(r.content, 'html.parser')
 
-        # Get product_page_url 
+        # Get product_page_url
         product_page_url = r.url
         data_book["product_page_url"] = product_page_url
-        
+
         # Get title
         title = soup.find("h1")
         data_book["title"] = title.text
@@ -47,15 +49,32 @@ def get_book(url):
         image_tag = soup.find("div", class_="carousel-inner").find("img")
         image_url = static_url + image_tag["src"].strip("./")
         data_book["image_url"] = image_url
-    
-    
+
+        # Get review_rating
+        notation_container = soup.find(
+            "div", class_="product_main").find("p", class_="star-rating")
+        nb_stars = notation_container["class"][-1]
+
+        match nb_stars:
+            case "One":
+                nb_stars = 1
+            case "Two":
+                nb_stars = 2
+            case "Three":
+                nb_stars = 3
+            case "Four":
+                nb_stars = 4
+            case "Five":
+                nb_stars = 5
+
+        data_book["review_rating"] = nb_stars
+
+
 # Getting data from one book
 get_book("http://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html")
 
 # Write datas into a csv file
-with open('output.csv', "w") as csv_file:
+with open('output.csv', "w", newline="") as csv_file:
     writer = csv.DictWriter(csv_file, fieldnames=data_book.keys())
     writer.writeheader()
     writer.writerow(data_book)
-
-
