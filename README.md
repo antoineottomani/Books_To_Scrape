@@ -1,13 +1,9 @@
 # Système de surveillance des prix d'un libraire
 
-<br>
-
 ## Description
 Ce programme réalisé en Python permet d'extraire automatiquement les informations tarifaires du site [Books To Scape](http://books.toscrape.com/) ainsi que les couvertures de chaque livre.
 
 ---
-
-<br>
 
 ## Installation du projet
 1. Le code source est disponible depuis Github :
@@ -28,8 +24,6 @@ pip install -r requirements.txt
 
 ---
 
-<br>
-
 ## Exécution du projet 
   
 
@@ -43,15 +37,12 @@ python main.py
 
 ---
 
-<br>
-
 ## Données produites
 
 Un dossier `data` composé de deux sous-dossiers sont créés pendant l'exécution du code :
 
 - `Csv` : les fichiers csv de chaque catégorie avec des informations sur tous les livres d'une  même catégorie 
 - `Img` : les images de chaque livre identifiées par une catégorie et un titre de livre.
-
 
 
 ---
