@@ -1,7 +1,7 @@
 import requests
 import shutil
 from bs4 import BeautifulSoup
-from datetime import datetime
+from pathlib import Path
 
 
 book_attributes = [
@@ -30,6 +30,7 @@ def book(url: str) -> list:
     """
     
     book_data = []
+
     response_book = requests.get(url)
     soup_book = BeautifulSoup(response_book.content, "html.parser")
 
@@ -42,9 +43,9 @@ def book(url: str) -> list:
     book_data.append(title.text)
 
     # Get category
-    menu_links = soup_book.findAll("ul", class_="breadcrumb")
+    menu_links = soup_book.find_all("ul", class_="breadcrumb")
     for elt in menu_links:
-        links = elt.findAll("a")
+        links = elt.find_all("a")
         category = links[-1].text
     book_data.append(category)
 
@@ -54,6 +55,7 @@ def book(url: str) -> list:
     for td in tds:
         clean_data.append(td.text)
 
+    # Delete not necessary data
     del clean_data[1]
     del clean_data[3]
     del clean_data[-1]
@@ -74,16 +76,15 @@ def book(url: str) -> list:
     book_data.append(image_url)
 
     # Download image
-    # image_result = requests.get(image_url, stream = True)
-    # image_result.raw.decode_content = True
+    img_directory = Path.cwd() / "Data/Img"
+    img_directory.mkdir(parents=True, exist_ok=True)
 
-    # with open(f"Image-{title.text}.jpg", 'wb') as f:
-    #     shutil.copyfileobj(image_result.raw, f)
+    image_result = requests.get(image_url, stream = True)
+    image_result.raw.decode_content = True
 
-
-
-
-
+    with open(img_directory / f"{category}_{title.text.replace('/', '_')}.jpg", 'wb') as f:
+            shutil.copyfileobj(image_result.raw, f)
+        
     # Get review_rating
     notation_container = soup_book.find("div", class_="product_main").find("p", class_="star-rating")
     nb_stars = notation_container["class"][-1]

@@ -1,12 +1,21 @@
 import requests
 from bs4 import BeautifulSoup
 
-def get_one_page_book_url(category_url):
+def get_one_page_book_url(category_url: str) -> list:
+
+    """Function description
+     Args:
+        category_url (str): url of a category
+
+    Returns:
+        list: all books's urls from a one page category
+    """
+
     static_url_product = "http://books.toscrape.com/catalogue/"
     response = requests.get(category_url)
     soup = BeautifulSoup(response.content, "html.parser")
 
-    category_products = soup.findAll("h3")
+    category_products = soup.find_all("h3")
 
     products_urls_list = []
 
@@ -30,29 +39,27 @@ def all_category_urls(category_url: str) -> list:
         list: all books's urls from a specific category
     """
     
-    static_url_product = "http://books.toscrape.com/catalogue/"
     products_urls_list = []
     response = requests.get(category_url)
     soup = BeautifulSoup(response.content, "html.parser")
     
-    if response.status_code == 200:
+    try: # If other pages exist
+        pagination = soup.find("ul", class_="pager").select_one("li", class_="current").text.strip()
+        total_pages = [int(char)for char in pagination.split() if char.isdigit()][-1] # Return total pages number
+        
+        category_urls = []
 
-        try: # Cas ou il y a d'autres pages
-            pagination = soup.find("ul", class_="pager").select_one("li", class_="current").text.strip()
-            total_pages = [int(char)for char in pagination.split() if char.isdigit()][-1] # Renvoie le chiffre du total des pages
-            category_urls = []
+        # Create a list with urls next pages
+        for page in range(total_pages):
+            page += 1
+            next_page = category_url.replace("index.html", f"page-{page}.html")
+            category_urls.append(next_page)
 
-            # constituer une liste avec les urls de chaque page
-            for page in range(total_pages):
-                page += 1
-                next_page = category_url.replace("index.html", f"page-{page}.html")
-                category_urls.append(next_page)
+        for url in category_urls:
+            products_urls_list.extend(get_one_page_book_url(url))
+            
 
-            for url in category_urls:
-                products_urls_list.extend(get_one_page_book_url(url))
-                
-
-        except: # Cas ou il n'y a pas d'autres pages
-            products_urls_list = get_one_page_book_url(category_url)
+    except: # If one page
+        products_urls_list = get_one_page_book_url(category_url)
 
     return products_urls_list
