@@ -1,7 +1,7 @@
 # Système de surveillance des prix d'un libraire
 
 ## Description
-Ce programme réalisé en Python permet d'extraire automatiquement les informations tarifaires du site [Books To Scape](http://books.toscrape.com/) ainsi que les couvertures de chaque livre.
+Ce programme réalisé en Python permet d'extraire automatiquement les informations tarifaires du site [Books To Scrape](http://books.toscrape.com/) ainsi que les couvertures de chaque livre.
 
 ---
 
