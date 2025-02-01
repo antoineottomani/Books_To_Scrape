@@ -8,7 +8,7 @@ Ce programme réalisé en Python permet d'extraire automatiquement les informati
 ## Installation du projet
 1. Le code source est disponible depuis Github :
 ```
-git clone https://github.com/antoineottomani/OCR_Project02.git
+git clone https://github.com/antoineottomani/Books_To_Scrape.git
 ```
 
 2. Créer l'environnement virtuel puis l'activer:
